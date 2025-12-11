@@ -1,0 +1,13 @@
+# Iconos PWA requeridos:
+# 
+# Para que la PWA funcione correctamente, necesitas crear estos archivos de imagen:
+#
+# 1. icon-192x192.png (192x192 píxeles)
+# 2. icon-512x512.png (512x512 píxeles)
+# 3. apple-touch-icon.png (180x180 píxeles) - Opcional para iOS
+# 4. favicon.ico - Opcional
+#
+# Puedes usar herramientas como:
+# - https://realfavicongenerator.net/
+# - https://www.pwabuilder.com/imageGenerator
+# - Canva o Figma para crear los iconos

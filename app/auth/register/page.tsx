@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -41,29 +42,27 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <Link href="/" className="flex justify-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-500 to-emerald-500 rounded-xl shadow-lg hover:scale-105 transition-transform">
-            <span className="text-3xl" role="img" aria-label="Pulse Fitness">
-              💪
-            </span>
+          <div className="w-16 h-16 sm:w-20 sm:h-20 relative flex-shrink-0">
+            <Image src="/logo-color.png" alt="Pulse Fitness" fill className="object-contain" />
           </div>
         </Link>
 
         {/* Card */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8">
+          <div className="text-center mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
               Comienza tu transformación
             </h1>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
               Crea tu cuenta gratuita y empieza hoy
             </p>
           </div>
 
           {success ? (
-            <div className="text-center py-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 dark:bg-emerald-900/30 rounded-full mb-4">
+            <div className="text-center py-6 sm:py-8">
+              <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-emerald-100 dark:bg-emerald-900/30 rounded-full mb-3 sm:mb-4">
                 <svg
-                  className="w-8 h-8 text-emerald-600 dark:text-emerald-400"
+                  className="w-7 h-7 sm:w-8 sm:h-8 text-emerald-600 dark:text-emerald-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -77,15 +76,15 @@ export default function RegisterPage() {
                   />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
                 ¡Cuenta creada!
               </h2>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
                 Redirigiendo al inicio de sesión...
               </p>
             </div>
           ) : (
-            <form onSubmit={handleRegister} className="space-y-6">
+            <form onSubmit={handleRegister} className="space-y-4 sm:space-y-6">
               {/* Email */}
               <div>
                 <label
