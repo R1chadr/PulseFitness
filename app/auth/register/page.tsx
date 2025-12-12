@@ -1,6 +1,4 @@
 "use client";
-
-import { createClient } from "@/utils/supabase/client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -8,8 +6,13 @@ import Image from "next/image";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [age, setAge] = useState("");
+  const [weight, setWeight] = useState("");
+  const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
+  const [confPassword, setConfPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -19,21 +22,32 @@ export default function RegisterPage() {
     setLoading(true);
     setError("");
 
-    const supabase = createClient();
-    const { error: authError } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+    if (password !== confPassword) {
+      setError("Las contraseñas no coinciden");
+      setLoading(false);
+      return;
+    }
 
-    setLoading(false);
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, last_name: lastName, age, weight, correo, password, conf_password: confPassword }),
+      });
 
-    if (authError) {
-      setError(authError.message);
-    } else {
+      const data = await res.json();
+      setLoading(false);
+
+      if (!res.ok) {
+        setError(data?.error || 'Error en el registro');
+        return;
+      }
+
       setSuccess(true);
-      setTimeout(() => {
-        router.push("/auth/login");
-      }, 2000);
+      setTimeout(() => router.push('/auth/login'), 1400);
+    } catch (err: any) {
+      setLoading(false);
+      setError(err?.message ?? 'Error en el registro');
     }
   }
 
@@ -85,54 +99,42 @@ export default function RegisterPage() {
             </div>
           ) : (
             <form onSubmit={handleRegister} className="space-y-4 sm:space-y-6">
-              {/* Email */}
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
-                >
-                  Correo electrónico
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                  placeholder="tu@email.com"
-                  aria-label="Correo electrónico"
-                  disabled={loading}
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="name" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nombre</label>
+                  <input id="name" required value={name} onChange={(e) => setName(e.target.value)} className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" disabled={loading} />
+                </div>
+                <div>
+                  <label htmlFor="lastName" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Apellido</label>
+                  <input id="lastName" required value={lastName} onChange={(e) => setLastName(e.target.value)} className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" disabled={loading} />
+                </div>
               </div>
 
-              {/* Password */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="age" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Edad</label>
+                  <input id="age" type="number" min={1}  value={age} onChange={(e) => setAge(e.target.value)} className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-xl text-gray-900 dark:text-white" disabled={loading} />
+                </div>
+                <div>
+                  <label htmlFor="weight" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Peso (kg)</label>
+                  <input id="weight" type="number" min={1}  value={weight} onChange={(e) => setWeight(e.target.value)} className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-xl text-gray-900 dark:text-white" disabled={loading} />
+                </div>
+              </div>
+
               <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
-                >
-                  Contraseña
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  required
-                  minLength={6}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                  placeholder="••••••••"
-                  aria-label="Contraseña"
-                  aria-describedby="password-requirements"
-                  disabled={loading}
-                />
-                <p
-                  id="password-requirements"
-                  className="mt-2 text-xs text-gray-500 dark:text-gray-400"
-                >
-                  Mínimo 6 caracteres
-                </p>
+                <label htmlFor="correo" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Correo electrónico</label>
+                <input id="correo" type="email" required value={correo} onChange={(e) => setCorreo(e.target.value)} className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="tu@email.com" disabled={loading} />
+              </div>
+
+              <div>
+                <label htmlFor="password" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Contraseña</label>
+                <input id="password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="••••••••" disabled={loading} />
+                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">Mínimo 6 caracteres</p>
+              </div>
+
+              <div>
+                <label htmlFor="confPassword" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Confirmar contraseña</label>
+                <input id="confPassword" type="password" required minLength={6} value={confPassword} onChange={(e) => setConfPassword(e.target.value)} className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="••••••••" disabled={loading} />
               </div>
 
               {/* Error Message */}

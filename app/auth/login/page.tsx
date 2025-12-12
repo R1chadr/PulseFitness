@@ -1,6 +1,4 @@
 "use client";
-
-import { createClient } from "@/utils/supabase/client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -8,7 +6,7 @@ import Image from "next/image";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -17,20 +15,26 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ correo, password }),
+      });
+      const data = await res.json();
+      setLoading(false);
 
-    const supabase = createClient();
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+      if (!res.ok) {
+        setError(data?.error || 'Credenciales inválidas');
+        return;
+      }
 
-    setLoading(false);
-
-    if (authError) {
-      setError(authError.message);
-    } else {
-      router.push("/auth/dashboard");
+      // Login success
+      router.push('/auth/dashboard');
       router.refresh();
+    } catch (err: any) {
+      setLoading(false);
+      setError(err?.message ?? 'Error al iniciar sesión');
     }
   }
 
@@ -68,8 +72,8 @@ export default function LoginPage() {
                 id="email"
                 type="email"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={correo}
+                onChange={(e) => setCorreo(e.target.value)}
                 className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                 placeholder="tu@email.com"
                 aria-label="Correo electrónico"
